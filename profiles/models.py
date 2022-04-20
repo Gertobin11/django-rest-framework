@@ -10,7 +10,9 @@ class Profile(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     name = models.CharField(max_length=255, blank=True)
     content = models.TextField(blank=True)
-    image = CloudinaryField('image', default='https://res.cloudinary.com/dyg53cwvw/image/upload/v1650379514/user-image_ds1u1v.jpg')
+    image = models.ImageField(
+        upload_to='images/', default='../user-image_ds1u1v.jpg', blank=True
+    )
 
     class Meta:
         ordering = ['-created_at']
