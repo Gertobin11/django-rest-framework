@@ -24,3 +24,32 @@ class PostListViewTests(APITestCase):
     def test_logges_out_user_cannot_post(self):
         response = self.client.post('/posts/', {'title': 'a title'})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class PostDetailTests(APITestCase):
+    def setUp(self):
+        ger = User.objects.create_user(username='ger', password='pass')
+        mason = User.objects.create_user(username='mason', password='pass')
+        Post.objects.create(owner=ger, title='a test')
+        Post.objects.create(owner=mason, title='a test title')
+
+    def test_user_can_view_post(self):
+        response = self.client.get("/posts/1")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['title'], 'a test')
+
+    def test_page_is_not_valid(self):
+        response = self.client.get("/posts/1111")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_user_can_edit_own_posts(self):
+        self.client.login(username='ger', password='pass')
+        response = self.client.put('/posts/1', {'title': 'a new title'})
+        post = Post.objects.filter(pk=1).first()
+        self.assertEqual(post.title, 'a new title')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_user_cannot_update_another_users_post(self):
+        self.client.login(username='ger', password='pass')
+        response = self.client.put('/posts/2', {'title': 'a new title'})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
