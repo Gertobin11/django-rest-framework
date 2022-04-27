@@ -1,5 +1,7 @@
-from rest_framework import generics
+from django.db.models import Count
+from rest_framework import generics, filters
 from rest_framework import permissions
+from django_filters.rest_framework import DjangoFilterBackend
 from django_rest_framework.permissions import IsOwnerOrReadOnly
 from .models import Post
 from .serializers import PostSerializer
@@ -11,7 +13,29 @@ class PostList(generics.ListCreateAPIView):
     permission_classes = [
                           permissions.IsAuthenticatedOrReadOnly
                          ]
-    queryset = Post.objects.all()
+    queryset = Post.objects.annotate(
+        comment_count=Count('comment', distinct=True),
+        like_count=Count('likes', distinct=True)
+    ).order_by('-created_at')
+    filter_backends = [
+        filters.OrderingFilter,
+        filters.SearchFilter,
+        DjangoFilterBackend
+    ]
+    filterset_fields = [
+        'owner__followed__owner__profile',
+        'likes__owner__profile',
+        'owner__profile'
+    ]
+    ordering_fields = [
+        'like_count',
+        'comment_count',
+        'like__created_at'
+    ]
+    search_fields = [
+        'owner__username',
+        'title'
+    ]
 
 
 class PostDetail(generics.RetrieveUpdateDestroyAPIView):

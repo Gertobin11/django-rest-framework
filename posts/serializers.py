@@ -9,6 +9,8 @@ class PostSerializer(serializers.ModelSerializer):
     profile_id = serializers.ReadOnlyField(source='owner.profile.id')
     profile_image = serializers.ReadOnlyField(source='owner.profile.image.url')
     like_id = serializers.SerializerMethodField()
+    like_count = serializers.ReadOnlyField()
+    comment_count = serializers.ReadOnlyField()
 
     def get_like_id(self, obj):
         user = self.context['request'].user
@@ -45,5 +47,5 @@ class PostSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'owner', 'created_at', 'updated_at', 'title',
             'content', 'image', 'is_owner', 'profile_id', 'profile_image',
-            'image_filter', 'like_id'
+            'image_filter', 'like_id', 'like_count', 'comment_count'
         ]
