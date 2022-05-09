@@ -14,6 +14,7 @@ from pathlib import Path
 
 import os
 import dj_database_url
+import re
 
 if os.path.exists('env.py'):
     import env
@@ -62,7 +63,7 @@ SECRET_KEY = 'django-insecure-3@9$omma-a-@@o&s)oo$zix16zj9=y_uolk=v3h&gq4_u68^b&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'DEV' in os.environ
 
-ALLOWED_HOSTS = ['localhost', 'drf-captured.herokuapp.com']
+ALLOWED_HOSTS = ['localhost', os.environ.get('ALLOWED_HOST')]
 
 if 'CLIENT_ORIGIN' in os.environ:
     CORS_ALLOWED_ORIGINS = [
@@ -71,6 +72,11 @@ if 'CLIENT_ORIGIN' in os.environ:
 else:
     CORS_ALLOWED_ORIGIN_REGEXES = [
         r"^https://.*\.gitpod\.io$"
+    ]
+if 'CLIENT_ORIGIN_DEV' in os.environ:
+    extracted_url = re.match(r'^.+-', os.environ.get('CLIENT_ORIGIN_DEV', ''), re.IGNORECASE).group(0)
+    CORS_ALLOWED_ORIGIN_REGEXES = [
+        rf"{extracted_url}(eu|us)\d+[a-z]*\.gitpod\.io$",
     ]
 
 CORS_ALLOW_CREDENTIALS = True
