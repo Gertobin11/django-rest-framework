@@ -46,12 +46,11 @@ if 'DEV' not in os.environ:
 REST_USE_JWT = True
 JWT_AUTH_SECURE = True
 JWT_AUTH_COOKIE = 'my-app-auth'
-JWT_AUTH_REFRESH_COOKIE = 'my-refresh-cookie'
+JWT_AUTH_REFRESH_COOKIE = 'my-refresh-token'
 JWT_AUTH_SAMESITE = 'None'
 
 REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': ('django_rest_framework.serializers'
-                                '.CurrentUserSerializer')
+    'USER_DETAILS_SERIALIZER': 'django_rest_framework.serializers.CurrentUserSerializer'
 }
 
 # Quick-start development settings - unsuitable for production
@@ -80,6 +79,7 @@ if 'CLIENT_ORIGIN_DEV' in os.environ:
     ]
 
 CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Application definition
