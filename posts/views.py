@@ -36,16 +36,18 @@ class PostList(generics.ListCreateAPIView):
         'owner__username',
         'title'
     ]
-    
+
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
 
 class PostDetail(generics.RetrieveUpdateDestroyAPIView):
-
-    permission_classes = [IsOwnerOrReadOnly]
+    """
+    Retrieve a post and edit or delete it if you own it.
+    """
     serializer_class = PostSerializer
+    permission_classes = [IsOwnerOrReadOnly]
     queryset = Post.objects.annotate(
-        likes_count=Count('likes', distinct=True),
-        comments_count=Count('comment', distinct=True)
+        comment_count=Count('comment', distinct=True),
+        like_count=Count('likes', distinct=True)
     ).order_by('-created_at')
